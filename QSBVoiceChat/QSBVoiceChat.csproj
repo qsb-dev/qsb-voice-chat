@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyTitle>QSBVoiceChat</AssemblyTitle>
+    <Product>QSB Voice Chat</Product>
+    <OutputPath Condition="Exists('$(OwmlDir)')">$(OwmlDir)\Mods\_nebula.QSBVoiceChat</OutputPath>
+    <NoWarn>CS1998;CS0649</NoWarn>
+  </PropertyGroup>
+
+  <Target Name="weave" AfterTargets="PostBuildEvent">
+    <Exec Command=".\MirrorWeaver &quot;$(TargetPath)&quot;" WorkingDirectory="./lib/Release/" />
+  </Target>
+
+  <ItemGroup>
+    <None Include="manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="OuterWildsGameLibs" Version="1.1.13.393" IncludeAssets="compile" />
+    <PackageReference Include="OWML" Version="2.9.0" IncludeAssets="compile" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Adrenak.UniVoice.AudioSourceOutput\Adrenak.UniVoice.AudioSourceOutput.csproj" />
+    <ProjectReference Include="..\Adrenak.UniVoice.UniMicInput\Adrenak.UniVoice.UniMicInput.csproj" />
+    <ProjectReference Include="..\UniVoice\Adrenak.UniVoice.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Reference Include="Mirror">
+      <HintPath>lib\Mirror.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirror.Components">
+      <HintPath>lib\Mirror.Components.dll</HintPath>
+    </Reference>
+    <Reference Include="Mirror.Transports">
+      <HintPath>lib\Mirror.Transports.dll</HintPath>
+    </Reference>
+    <Reference Include="QSB">
+      <HintPath>lib\QSB.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>
