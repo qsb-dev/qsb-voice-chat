@@ -29,12 +29,12 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	public ChatroomNetwork()
 	{
-		QSBVoiceChatCore.QSBAPI.GetOnStartHostEvent().AddListener(OnStartHost);
-		QSBVoiceChatCore.QSBAPI.GetOnStopHostEvent().AddListener(OnStopHost);
-		QSBVoiceChatCore.QSBAPI.GetOnLocalJoinServerEvent().AddListener(OnLocalJoinServer);
-		QSBVoiceChatCore.QSBAPI.GetOnLocalLeaveServerEvent().AddListener(OnLocalLeaveServer);
-		QSBVoiceChatCore.QSBAPI.GetOnPeerJoinServerEvent().AddListener(OnPeerJoinServer);
-		QSBVoiceChatCore.QSBAPI.GetOnPeerLeaveServerEvent().AddListener(OnPeerLeaveServer);
+		QSBVoiceChatCore.QSBAPI.OnStartHost().AddListener(OnStartHost);
+		QSBVoiceChatCore.QSBAPI.OnStopHost().AddListener(OnStopHost);
+		QSBVoiceChatCore.QSBAPI.OnLocalJoin().AddListener(OnLocalJoinServer);
+		QSBVoiceChatCore.QSBAPI.OnLocalLeave().AddListener(OnLocalLeaveServer);
+		QSBVoiceChatCore.QSBAPI.OnPeerJoin().AddListener(OnPeerJoinServer);
+		QSBVoiceChatCore.QSBAPI.OnPeerLeave().AddListener(OnPeerLeaveServer);
 
 		PeerIDs = new();
 	}
@@ -47,12 +47,12 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	public void Dispose()
 	{
-		QSBVoiceChatCore.QSBAPI.GetOnStartHostEvent().RemoveListener(OnStartHost);
-		QSBVoiceChatCore.QSBAPI.GetOnStopHostEvent().RemoveListener(OnStopHost);
-		QSBVoiceChatCore.QSBAPI.GetOnLocalJoinServerEvent().RemoveListener(OnLocalJoinServer);
-		QSBVoiceChatCore.QSBAPI.GetOnLocalLeaveServerEvent().RemoveListener(OnLocalLeaveServer);
-		QSBVoiceChatCore.QSBAPI.GetOnPeerJoinServerEvent().RemoveListener(OnPeerJoinServer);
-		QSBVoiceChatCore.QSBAPI.GetOnPeerLeaveServerEvent().RemoveListener(OnPeerLeaveServer);
+		QSBVoiceChatCore.QSBAPI.OnStartHost().RemoveListener(OnStartHost);
+		QSBVoiceChatCore.QSBAPI.OnStopHost().RemoveListener(OnStopHost);
+		QSBVoiceChatCore.QSBAPI.OnLocalJoin().RemoveListener(OnLocalJoinServer);
+		QSBVoiceChatCore.QSBAPI.OnLocalLeave().RemoveListener(OnLocalLeaveServer);
+		QSBVoiceChatCore.QSBAPI.OnPeerJoin().RemoveListener(OnPeerJoinServer);
+		QSBVoiceChatCore.QSBAPI.OnPeerLeave().RemoveListener(OnPeerLeaveServer);
 	}
 
 	public void SendAudioSegment(short peerID, ChatroomAudioSegment data)
@@ -78,8 +78,9 @@ internal class ChatroomNetwork : IChatroomNetwork
 		OnClosedChatroom?.SafeInvoke();
 	}
 
-	private void OnLocalJoinServer(uint id)
+	private void OnLocalJoinServer()
 	{
+		var id = QSBPlayerManager.LocalPlayerId;
 		DebugLog.ToConsole($"ON LOCAL JOIN SERVER", OWML.Common.MessageType.Info);
 		OnJoinedChatroom?.SafeInvoke((short)id);
 		OwnID = (short)id;
