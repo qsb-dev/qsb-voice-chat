@@ -184,6 +184,7 @@ namespace Adrenak.UniVoice.AudioSourceOutput
 
 			public IAudioOutput Create(int samplingRate, int channelCount, int segmentLength)
 			{
+				Debug.LogError($"CREATE samplingRate:{samplingRate} channelCount:{channelCount} segmentLength:{segmentLength}");
 				return New(
 					new CircularAudioClip(
 						samplingRate, channelCount, segmentLength, BufferSegCount

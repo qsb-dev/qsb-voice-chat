@@ -1,8 +1,4 @@
 ﻿using Adrenak.UniVoice;
-using QSB.Messaging;
-using QSB.Player;
-using QSB.Utility;
-using QSBVoiceChat.Messages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,12 +25,10 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	public ChatroomNetwork()
 	{
-		QSBVoiceChatCore.QSBAPI.OnStartHost().AddListener(OnStartHost);
-		QSBVoiceChatCore.QSBAPI.OnStopHost().AddListener(OnStopHost);
-		QSBVoiceChatCore.QSBAPI.OnLocalJoin().AddListener(OnLocalJoinServer);
-		QSBVoiceChatCore.QSBAPI.OnLocalLeave().AddListener(OnLocalLeaveServer);
-		QSBVoiceChatCore.QSBAPI.OnPeerJoin().AddListener(OnPeerJoinServer);
-		QSBVoiceChatCore.QSBAPI.OnPeerLeave().AddListener(OnPeerLeaveServer);
+		VCCore.QSBAPI.OnPlayerJoin().AddListener(OnPlayerJoin);
+		VCCore.QSBAPI.OnPlayerLeave().AddListener(OnPlayerLeave);
+
+		VCCore.QSBAPI.RegisterHandler<ChatroomAudioSegment>("QSBVoiceChat-AudioMessage", (peerId, data) => GotAudioMessage((short)peerId, data));
 
 		PeerIDs = new();
 	}
@@ -47,17 +41,48 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	public void Dispose()
 	{
-		QSBVoiceChatCore.QSBAPI.OnStartHost().RemoveListener(OnStartHost);
-		QSBVoiceChatCore.QSBAPI.OnStopHost().RemoveListener(OnStopHost);
-		QSBVoiceChatCore.QSBAPI.OnLocalJoin().RemoveListener(OnLocalJoinServer);
-		QSBVoiceChatCore.QSBAPI.OnLocalLeave().RemoveListener(OnLocalLeaveServer);
-		QSBVoiceChatCore.QSBAPI.OnPeerJoin().RemoveListener(OnPeerJoinServer);
-		QSBVoiceChatCore.QSBAPI.OnPeerLeave().RemoveListener(OnPeerLeaveServer);
+		VCCore.QSBAPI.OnPlayerJoin().RemoveListener(OnPlayerJoin);
+		VCCore.QSBAPI.OnPlayerLeave().RemoveListener(OnPlayerLeave);
+	}
+
+	public void OnPlayerJoin(uint id)
+	{
+		if (id == VCCore.QSBAPI.GetLocalPlayerID())
+		{
+			if (VCCore.QSBAPI.GetIsHost())
+			{
+				OnStartHost();
+			}
+
+			OnLocalJoinServer();
+		}
+		else
+		{
+			OnPeerJoinServer(id);
+		}
+	}
+
+	public void OnPlayerLeave(uint id)
+	{
+		if (id == VCCore.QSBAPI.GetLocalPlayerID())
+		{
+			if (VCCore.QSBAPI.GetIsHost())
+			{
+				OnStopHost();
+			}
+
+			OnLocalLeaveServer();
+		}
+		else
+		{
+			OnPeerLeaveServer(id);
+		}
 	}
 
 	public void SendAudioSegment(short peerID, ChatroomAudioSegment data)
 	{
-		new AudioSegmentMessage(peerID, data).Send();
+		VCCore.Helper.Console.WriteLine($"Sending audio segment");
+		VCCore.QSBAPI.SendMessage("QSBVoiceChat-AudioMessage", data, (uint)peerID);
 		OnAudioSent?.SafeInvoke(peerID, data);
 	}
 
@@ -68,34 +93,34 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	private void OnStartHost()
 	{
-		DebugLog.ToConsole($"ON START HOST", OWML.Common.MessageType.Info);
+		VCCore.Helper.Console.WriteLine($"ON START HOST", OWML.Common.MessageType.Info);
 		OnCreatedChatroom?.SafeInvoke();
 	}
 	
 	private void OnStopHost()
 	{
-		DebugLog.ToConsole($"ON STOP HOST", OWML.Common.MessageType.Info);
+		VCCore.Helper.Console.WriteLine($"ON STOP HOST", OWML.Common.MessageType.Info);
 		OnClosedChatroom?.SafeInvoke();
 	}
 
 	private void OnLocalJoinServer()
 	{
-		var id = QSBPlayerManager.LocalPlayerId;
-		DebugLog.ToConsole($"ON LOCAL JOIN SERVER", OWML.Common.MessageType.Info);
+		var id = VCCore.QSBAPI.GetLocalPlayerID();
+		VCCore.Helper.Console.WriteLine($"ON LOCAL JOIN SERVER", OWML.Common.MessageType.Info);
 		OnJoinedChatroom?.SafeInvoke((short)id);
 		OwnID = (short)id;
 
-		var alreadyConnectedPlayers = QSBPlayerManager.PlayerList.Where(x => !x.IsLocalPlayer).ToList();
+		var alreadyConnectedPlayers = VCCore.QSBAPI.GetPlayerIDs().Where(x => x != VCCore.QSBAPI.GetLocalPlayerID());
 		foreach (var item in alreadyConnectedPlayers)
 		{
-			PeerIDs.Add((short)item.PlayerId);
-			OnPeerJoinedChatroom?.SafeInvoke((short)item.PlayerId);
+			PeerIDs.Add((short)item);
+			OnPeerJoinedChatroom?.SafeInvoke((short)item);
 		}
 	}
 
 	private void OnLocalLeaveServer()
 	{
-		DebugLog.ToConsole($"ON LOCAL LEAVE SERVER", OWML.Common.MessageType.Info);
+		VCCore.Helper.Console.WriteLine($"ON LOCAL LEAVE SERVER", OWML.Common.MessageType.Info);
 		OnLeftChatroom?.SafeInvoke();
 
 		foreach (var item in PeerIDs)
@@ -108,14 +133,14 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	private void OnPeerJoinServer(uint id)
 	{
-		DebugLog.ToConsole($"ON PEER JOIN SERVER", OWML.Common.MessageType.Info);
+		VCCore.Helper.Console.WriteLine($"ON PEER JOIN SERVER", OWML.Common.MessageType.Info);
 		OnPeerJoinedChatroom?.SafeInvoke((short)id);
 		PeerIDs.Add((short)id);
 	}
 
 	private void OnPeerLeaveServer(uint id)
 	{
-		DebugLog.ToConsole($"ON PEER LEFT SERVER", OWML.Common.MessageType.Info);
+		VCCore.Helper.Console.WriteLine($"ON PEER LEFT SERVER", OWML.Common.MessageType.Info);
 		OnPeerLeftChatroom?.SafeInvoke((short)id);
 		PeerIDs.Remove((short)id);
 	}

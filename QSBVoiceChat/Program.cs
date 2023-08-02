@@ -3,16 +3,11 @@ using Adrenak.UniVoice.AudioSourceOutput;
 using Adrenak.UniVoice.UniMicInput;
 using OWML.Common;
 using OWML.ModHelper;
-using QSB.Messaging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QSBVoiceChat
 {
-	public class QSBVoiceChatCore : ModBehaviour
+	public class VCCore : ModBehaviour
 	{
 		public static IModHelper Helper { get; private set; }
 		public static IQSBAPI QSBAPI { get; private set; }
@@ -29,6 +24,7 @@ namespace QSBVoiceChat
 		{
 			var network = new ChatroomNetwork();
 			var audioInput = new UniVoiceUniMicInput();
+			//var audioInput = new AudioFileAudioInput();
 			var audioOutputFactory = new UniVoiceAudioSourceOutput.Factory();
 			Agent = new ChatroomAgent(network, audioInput, audioOutputFactory);
 		}
@@ -43,14 +39,6 @@ namespace QSBVoiceChat
 			foreach (var item in Agent.PeerOutputs.Values.Cast<UniVoiceAudioSourceOutput>())
 			{
 				item.transform.position = Locator.GetPlayerCamera().transform.position;
-			}
-		}
-
-		private void OnRenderObject()
-		{
-			foreach (var item in Agent.PeerOutputs.Values.Cast<UniVoiceAudioSourceOutput>())
-			{
-				Popcron.Gizmos.Sphere(item.transform.position, 2f);
 			}
 		}
 	}
