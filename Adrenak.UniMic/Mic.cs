@@ -167,7 +167,7 @@ namespace Adrenak.UniMic
 		/// </summary>
 		public void StartRecording(int frequency = 16000, int sampleDurationMS = 10)
 		{
-			Debug.LogError($"START RECORDING");
+			Debug.LogError($"START RECORDING ON {CurrentDeviceName}");
 			StopRecording();
 			IsRecording = true;
 

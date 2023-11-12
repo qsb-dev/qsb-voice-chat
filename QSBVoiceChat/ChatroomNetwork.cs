@@ -52,6 +52,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 			if (VCCore.QSBAPI.GetIsHost())
 			{
 				OnStartHost();
+				return;
 			}
 
 			OnLocalJoinServer();
@@ -81,7 +82,6 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	public void SendAudioSegment(short peerID, ChatroomAudioSegment data)
 	{
-		VCCore.Helper.Console.WriteLine($"Sending audio segment");
 		VCCore.QSBAPI.SendMessage("QSBVoiceChat-AudioMessage", data, (uint)peerID);
 		OnAudioSent?.SafeInvoke(peerID, data);
 	}

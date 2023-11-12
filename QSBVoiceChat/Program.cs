@@ -24,7 +24,6 @@ namespace QSBVoiceChat
 		{
 			var network = new ChatroomNetwork();
 			var audioInput = new UniVoiceUniMicInput();
-			//var audioInput = new AudioFileAudioInput();
 			var audioOutputFactory = new UniVoiceAudioSourceOutput.Factory();
 			Agent = new ChatroomAgent(network, audioInput, audioOutputFactory);
 		}
