@@ -45,7 +45,7 @@ public interface IQSBAPI
 	Vector3 GetPlayerPosition(uint playerID);
 
 	/// <summary>
-	/// Returns true if a given player has fully loaded into the game.
+	/// Returns true if a given player has fully loaded into the game. If the local player is still loading into the game, this will return false.
 	/// </summary>
 	/// <param name="playerID">The ID of the player.</param>
 	bool GetPlayerReady(uint playerID);
