@@ -3,7 +3,6 @@ using Adrenak.UniVoice.AudioSourceOutput;
 using Adrenak.UniVoice.UniMicInput;
 using OWML.Common;
 using OWML.ModHelper;
-using System.Linq;
 
 namespace QSBVoiceChat
 {
@@ -24,20 +23,25 @@ namespace QSBVoiceChat
 		{
 			var network = new ChatroomNetwork();
 			var audioInput = new UniVoiceUniMicInput();
-			var audioOutputFactory = new UniVoiceAudioSourceOutput.Factory();
+			var audioOutputFactory = new AudioOutputFactory();
 			Agent = new ChatroomAgent(network, audioInput, audioOutputFactory);
 		}
 
 		private void Update()
 		{
-			if (Locator.GetPlayerCamera() == null)
+			foreach (var item in Agent.PeerOutputs)
 			{
-				return;
-			}
+				var playerid = (uint)item.Key;
 
-			foreach (var item in Agent.PeerOutputs.Values.Cast<UniVoiceAudioSourceOutput>())
-			{
-				item.transform.position = Locator.GetPlayerCamera().transform.position;
+				if (!QSBAPI.GetPlayerReady(playerid))
+				{
+					continue;
+				}
+
+				var output = item.Value as UniVoiceAudioSourceOutput;
+
+				var playerPos = QSBAPI.GetPlayerPosition(playerid);
+				output.transform.position = playerPos;
 			}
 		}
 	}
