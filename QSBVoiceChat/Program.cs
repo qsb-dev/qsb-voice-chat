@@ -3,6 +3,7 @@ using Adrenak.UniVoice.AudioSourceOutput;
 using Adrenak.UniVoice.UniMicInput;
 using OWML.Common;
 using OWML.ModHelper;
+using UnityEngine;
 
 namespace QSBVoiceChat
 {
@@ -40,8 +41,9 @@ namespace QSBVoiceChat
 
 				var output = item.Value as UniVoiceAudioSourceOutput;
 
-				var playerPos = QSBAPI.GetPlayerPosition(playerid);
-				output.transform.position = playerPos;
+				var playerCamera = QSBAPI.GetPlayerCamera(playerid);
+				output.transform.parent = playerCamera.transform;
+				output.transform.localPosition = Vector3.zero;
 			}
 		}
 	}

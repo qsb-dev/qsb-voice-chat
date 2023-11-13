@@ -16,6 +16,14 @@ public class AudioOutputFactory : IAudioOutputFactory
 		audioSource.minDistance = 0;
 		audioSource.maxDistance = 30;
 
+		audioSource.gameObject.SetActive(false);
+
+		var owAudioSource = audioSource.gameObject.AddComponent<OWAudioSource>();
+		owAudioSource._track = OWAudioMixer.TrackName.Environment;
+		owAudioSource._audioLibraryClip = AudioType.None;
+
+		audioSource.gameObject.SetActive(true);
+
 		return UniVoiceAudioSourceOutput.New(audioClip, audioSource, 5);
 	}
 }
