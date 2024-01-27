@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace QSBVoiceChat;
 
@@ -88,6 +89,12 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	public void GotAudioMessage(short peerId, ChatroomAudioSegment data)
 	{
+		for (var i = 0; i < data.samples.Length; i++)
+		{
+			data.samples[i] *= 2;
+			data.samples[i] = Mathf.Clamp(data.samples[i], -1, 1);
+		}
+
 		OnAudioReceived?.SafeInvoke(peerId, data);
 	}
 
