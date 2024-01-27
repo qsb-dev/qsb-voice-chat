@@ -6,10 +6,6 @@
     <NoWarn>CS1998;CS0649</NoWarn>
   </PropertyGroup>
 
-  <Target Name="weave" AfterTargets="PostBuildEvent">
-    <Exec Command=".\MirrorWeaver &quot;$(TargetPath)&quot;" WorkingDirectory="./weaver/" />
-  </Target>
-
   <ItemGroup>
     <None Include="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -25,12 +21,6 @@
     <ProjectReference Include="..\Adrenak.UniVoice.AudioSourceOutput\Adrenak.UniVoice.AudioSourceOutput.csproj" />
     <ProjectReference Include="..\Adrenak.UniVoice.UniMicInput\Adrenak.UniVoice.UniMicInput.csproj" />
     <ProjectReference Include="..\UniVoice\Adrenak.UniVoice.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="Mirror">
-      <HintPath>..\..\..\..\AppData\Roaming\OuterWildsModManager\OWML\Mods\Raicuparta.QuantumSpaceBuddies\Mirror.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
