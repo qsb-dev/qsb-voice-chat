@@ -13,13 +13,13 @@ public class AudioOutputFactory : IAudioOutputFactory
 		var audioSource = new GameObject($"UniVoiceAudioSourceOutput").AddComponent<AudioSource>();
 		audioSource.spatialBlend = 1;
 		audioSource.rolloffMode = AudioRolloffMode.Linear;
-		audioSource.minDistance = 0;
-		audioSource.maxDistance = 30;
+		audioSource.minDistance = 5;
+		audioSource.maxDistance = 50;
 
 		audioSource.gameObject.SetActive(false);
 
 		var owAudioSource = audioSource.gameObject.AddComponent<OWAudioSource>();
-		owAudioSource._track = OWAudioMixer.TrackName.Environment;
+		owAudioSource._track = OWAudioMixer.TrackName.Player_External;
 		owAudioSource._audioLibraryClip = AudioType.None;
 
 		audioSource.gameObject.SetActive(true);
