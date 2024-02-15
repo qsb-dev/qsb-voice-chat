@@ -12,6 +12,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 {
 	public short OwnID { get; private set; }
 	public List<short> PeerIDs { get; }
+	public Dictionary<long, bool> IsSpeaking { get; }
 
 	public event Action OnCreatedChatroom; //
 	public event Action<Exception> OnChatroomCreationFailed;
@@ -32,6 +33,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 		VCCore.QSBAPI.RegisterHandler<ChatroomAudioSegment>("QSBVoiceChat-AudioMessage", (peerId, data) => GotAudioMessage((short)peerId, data));
 
 		PeerIDs = new();
+		IsSpeaking = new();
 	}
 
 	// we're just using piggybacking off QSB's networking, dont need these
@@ -87,13 +89,20 @@ internal class ChatroomNetwork : IChatroomNetwork
 		OnAudioSent?.SafeInvoke(peerID, data);
 	}
 
+	public static readonly int minimumDecibels = -60;
+
 	public void GotAudioMessage(short peerId, ChatroomAudioSegment data)
 	{
+		float levelMax = 0;
 		for (var i = 0; i < data.samples.Length; i++)
 		{
 			data.samples[i] *= 2;
 			data.samples[i] = Mathf.Clamp(data.samples[i], -1, 1);
+			float wavePeak = data.samples[i] * data.samples[i];
+			if (levelMax < wavePeak) levelMax = wavePeak;
 		}
+		float db = 20 * Mathf.Log10(Mathf.Abs(levelMax));
+		IsSpeaking[peerId] = db > minimumDecibels;
 
 		OnAudioReceived?.SafeInvoke(peerId, data);
 	}
