@@ -14,14 +14,15 @@ internal class ChatroomNetwork : IChatroomNetwork
 	public List<short> PeerIDs { get; }
 	public Dictionary<long, bool> IsSpeaking { get; }
 
-	public event Action OnCreatedChatroom; //
+	// events required by interface, used by ChatroomAgent
+	public event Action OnCreatedChatroom;
 	public event Action<Exception> OnChatroomCreationFailed;
-	public event Action OnClosedChatroom; //
-	public event Action<short> OnJoinedChatroom; //
+	public event Action OnClosedChatroom;
+	public event Action<short> OnJoinedChatroom;
 	public event Action<Exception> OnChatroomJoinFailed;
-	public event Action OnLeftChatroom; //
-	public event Action<short> OnPeerJoinedChatroom; //
-	public event Action<short> OnPeerLeftChatroom; //
+	public event Action OnLeftChatroom;
+	public event Action<short> OnPeerJoinedChatroom;
+	public event Action<short> OnPeerLeftChatroom;
 	public event Action<short, ChatroomAudioSegment> OnAudioReceived;
 	public event Action<short, ChatroomAudioSegment> OnAudioSent;
 

@@ -65,6 +65,7 @@ namespace QSBVoiceChat
 			GetSettingsValueOrDefault<bool>(config, "Player Head Bobbing", true);
 		}
 
+		// i have no idea what this is or what its for
 		public static T GetSettingsValueOrDefault<T>(IModConfig config, string key, T defaultValue)
 		{
 			try
