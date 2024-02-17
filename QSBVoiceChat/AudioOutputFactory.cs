@@ -6,6 +6,7 @@ namespace QSBVoiceChat;
 
 public class AudioOutputFactory : IAudioOutputFactory
 {
+	// copied from UniVoiceAudioSourceOutput.Factory
 	public IAudioOutput Create(int samplingRate, int channelCount, int segmentLength)
 	{
 		var audioClip = new CircularAudioClip(samplingRate, channelCount, segmentLength, 10);

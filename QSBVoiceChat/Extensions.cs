@@ -6,6 +6,7 @@ namespace QSBVoiceChat;
 
 public static class Extensions
 {
+	// copied from qsb
 	public static void SafeInvoke(this MulticastDelegate multicast, params object[] args)
 	{
 		foreach (var del in multicast.GetInvocationList())
