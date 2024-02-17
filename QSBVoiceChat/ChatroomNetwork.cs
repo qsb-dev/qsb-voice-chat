@@ -94,15 +94,18 @@ internal class ChatroomNetwork : IChatroomNetwork
 		OnAudioSent?.SafeInvoke(peerID, data);
 	}
 
+	// TODO: make this configurable at some point
 	public static readonly int minimumDecibels = -60;
 
 	public void GotAudioMessage(short peerID, ChatroomAudioSegment data)
 	{
+		// TODO OPTIMIZE: only send when close enough and when speaking to reduce bottleneck
 		float levelMax = 0;
 		for (var i = 0; i < data.samples.Length; i++)
 		{
 			data.samples[i] *= 2;
 			data.samples[i] = Mathf.Clamp(data.samples[i], -1, 1);
+			
 			float wavePeak = data.samples[i] * data.samples[i];
 			if (levelMax < wavePeak) levelMax = wavePeak;
 		}
