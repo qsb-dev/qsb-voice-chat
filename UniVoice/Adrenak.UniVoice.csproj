@@ -345,7 +345,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChatroomAgent.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Interfaces\IAudioInput.cs" />
     <Compile Include="Interfaces\IAudioOutput.cs" />
     <Compile Include="Interfaces\IAudioOutputFactory.cs" />
