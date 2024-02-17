@@ -4,6 +4,6 @@
   "name": "QSB Voice Chat",
   "uniqueName": "_nebula.QSBVoiceChat",
   "version": "1.0.0",
-  "owmlVersion": "2.9.0",
+  "owmlVersion": "2.9.8",
   "dependencies": [ "Raicuparta.QuantumSpaceBuddies" ]
 }
