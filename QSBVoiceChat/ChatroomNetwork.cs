@@ -12,7 +12,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 {
 	public short OwnID { get; private set; }
 	public List<short> PeerIDs { get; }
-	public Dictionary<long, bool> IsSpeaking { get; }
+	public Dictionary<short, bool> IsSpeaking { get; }
 
 	// events required by interface, used by ChatroomAgent
 	public event Action OnCreatedChatroom;
@@ -47,6 +47,9 @@ internal class ChatroomNetwork : IChatroomNetwork
 	{
 		VCCore.QSBAPI.OnPlayerJoin().RemoveListener(OnPlayerJoin);
 		VCCore.QSBAPI.OnPlayerLeave().RemoveListener(OnPlayerLeave);
+
+		PeerIDs.Clear();
+		IsSpeaking.Clear();
 	}
 
 	public void OnPlayerJoin(uint id)
@@ -74,6 +77,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 			if (VCCore.QSBAPI.GetIsHost())
 			{
 				OnStopHost();
+				// no return
 			}
 
 			OnLocalLeaveServer();
@@ -130,8 +134,9 @@ internal class ChatroomNetwork : IChatroomNetwork
 		var alreadyConnectedPlayers = VCCore.QSBAPI.GetPlayerIDs().Where(x => x != VCCore.QSBAPI.GetLocalPlayerID());
 		foreach (var item in alreadyConnectedPlayers)
 		{
-			PeerIDs.Add((short)item);
 			OnPeerJoinedChatroom?.SafeInvoke((short)item);
+			PeerIDs.Add((short)item);
+			IsSpeaking.Add((short)item, false);
 		}
 	}
 
@@ -146,6 +151,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 		}
 
 		PeerIDs.Clear();
+		IsSpeaking.Clear();
 	}
 
 	private void OnPeerJoinServer(uint id)
@@ -153,6 +159,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 		VCCore.Helper.Console.WriteLine($"ON PEER JOIN SERVER", OWML.Common.MessageType.Info);
 		OnPeerJoinedChatroom?.SafeInvoke((short)id);
 		PeerIDs.Add((short)id);
+		IsSpeaking.Add((short)id, false);
 	}
 
 	private void OnPeerLeaveServer(uint id)
@@ -160,5 +167,6 @@ internal class ChatroomNetwork : IChatroomNetwork
 		VCCore.Helper.Console.WriteLine($"ON PEER LEFT SERVER", OWML.Common.MessageType.Info);
 		OnPeerLeftChatroom?.SafeInvoke((short)id);
 		PeerIDs.Remove((short)id);
+		IsSpeaking.Remove((short)id);
 	}
 }
