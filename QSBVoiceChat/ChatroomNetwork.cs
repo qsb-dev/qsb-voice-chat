@@ -99,7 +99,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	public void GotAudioMessage(short peerID, ChatroomAudioSegment data)
 	{
-		// TODO OPTIMIZE: only send when close enough and when speaking to reduce bottleneck
+		// TODO OPTIMIZE: move this SendAudioSegment. only send when close enough and when speaking to reduce bottleneck
 		float levelMax = 0;
 		for (var i = 0; i < data.samples.Length; i++)
 		{
