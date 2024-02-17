@@ -19,8 +19,8 @@ public static class TalkingAnimationManager
 		var isLocalPlayer = id == VCCore.QSBAPI.GetLocalPlayerID();
 
 		var root = body.transform.Find(isLocalPlayer
-				? "Traveller_HEA_Player_v2"
-				: "REMOTE_Traveller_HEA_Player_v2"
+			? "Traveller_HEA_Player_v2"
+			: "REMOTE_Traveller_HEA_Player_v2"
 		);
 
 		if (root == null)

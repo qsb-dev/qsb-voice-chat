@@ -96,7 +96,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 
 	public static readonly int minimumDecibels = -60;
 
-	public void GotAudioMessage(short peerId, ChatroomAudioSegment data)
+	public void GotAudioMessage(short peerID, ChatroomAudioSegment data)
 	{
 		float levelMax = 0;
 		for (var i = 0; i < data.samples.Length; i++)
@@ -107,9 +107,12 @@ internal class ChatroomNetwork : IChatroomNetwork
 			if (levelMax < wavePeak) levelMax = wavePeak;
 		}
 		float db = 20 * Mathf.Log10(Mathf.Abs(levelMax));
-		IsSpeaking[peerId] = db > minimumDecibels;
+		if (IsSpeaking.ContainsKey(peerID))
+		{
+			IsSpeaking[peerID] = db > minimumDecibels;
+		}
 
-		OnAudioReceived?.SafeInvoke(peerId, data);
+		OnAudioReceived?.SafeInvoke(peerID, data);
 	}
 
 	private void OnStartHost()
@@ -117,7 +120,7 @@ internal class ChatroomNetwork : IChatroomNetwork
 		VCCore.Helper.Console.WriteLine($"ON START HOST", OWML.Common.MessageType.Info);
 		OnCreatedChatroom?.SafeInvoke();
 	}
-	
+
 	private void OnStopHost()
 	{
 		VCCore.Helper.Console.WriteLine($"ON STOP HOST", OWML.Common.MessageType.Info);

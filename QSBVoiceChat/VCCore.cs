@@ -21,15 +21,19 @@ namespace QSBVoiceChat
 			QSBAPI = ModHelper.Interaction.TryGetModApi<IQSBAPI>("Raicuparta.QuantumSpaceBuddies");
 			SetupChatroom();
 
-			QSBAPI.OnPlayerJoin().AddListener(SetupBobbleHead);//Setup Talking Heads for Everyone
+			// BUG?: doesnt persist between loops
+			QSBAPI.OnPlayerJoin().AddListener(SetupBobbleHead); //Setup Talking Heads for Everyone
 		}
 
 		private void SetupBobbleHead(uint playerID)
 		{
-			Helper.Events.Unity.RunWhen(() => QSBAPI.GetPlayerReady(playerID) && QSBAPI.GetPlayerCamera(playerID) != null, () =>
+			if (playerID != QSBAPI.GetLocalPlayerID())
 			{
-				TalkingAnimationManager.SetupTalkingHead(playerID);
-			});
+				Helper.Events.Unity.RunWhen(() => QSBAPI.GetPlayerReady(playerID), () =>
+				{
+					TalkingAnimationManager.SetupTalkingHead(playerID);
+				});
+			}
 		}
 
 		private void SetupChatroom()
@@ -45,17 +49,17 @@ namespace QSBVoiceChat
 			foreach (var item in Agent.PeerOutputs)
 			{
 				var playerid = (uint)item.Key;
+				var output = (UniVoiceAudioSourceOutput)item.Value;
 
-				if (!QSBAPI.GetPlayerReady(playerid))
+				if (!QSBAPI.GetPlayerReady(playerid) || QSBAPI.GetPlayerDead(playerid))
 				{
+					output.AudioSource.enabled = false;
 					continue;
 				}
 
-				var output = item.Value as UniVoiceAudioSourceOutput;
-
+				output.AudioSource.enabled = true;
 				var playerCamera = QSBAPI.GetPlayerCamera(playerid);
-				output.transform.parent = playerCamera.transform;
-				output.transform.localPosition = Vector3.zero;
+				output.transform.position = playerCamera.transform.position;
 			}
 		}
 
@@ -87,7 +91,7 @@ namespace QSBVoiceChat
 			{
 				config.SetSettingsValue(key, defaultValue);
 				return defaultValue;
-			};
+			}
 		}
 	}
 }
