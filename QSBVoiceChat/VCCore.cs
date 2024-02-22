@@ -21,8 +21,14 @@ namespace QSBVoiceChat
 			QSBAPI = ModHelper.Interaction.TryGetModApi<IQSBAPI>("Raicuparta.QuantumSpaceBuddies");
 			SetupChatroom();
 
-			// BUG: doesnt persist between loops
-			QSBAPI.OnPlayerJoin().AddListener(SetupBobbleHead); //Setup Talking Heads for Everyone
+			QSBAPI.OnPlayerJoin().AddListener(SetupBobbleHead);
+			LoadManager.OnCompleteSceneLoad += (scene, loadScene) =>
+			{
+				foreach (var playerID in QSBAPI.GetPlayerIDs())
+				{
+					SetupBobbleHead(playerID);
+				}
+			};
 		}
 
 		private void SetupBobbleHead(uint playerID)
